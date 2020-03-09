@@ -17,7 +17,6 @@ class _WrittingState extends State<Writting> {
   final dbHandler = DataBaseHandler.instance;
   bool inserting = false;
   bool atualizing = false;
-  AnimationController _controller;
   int _groupValue = 1; // type = Crédito
   List notes = List();
   List valuesAgregado = List();
@@ -32,7 +31,7 @@ class _WrittingState extends State<Writting> {
   TextEditingController _tituloEvent = TextEditingController();
   TextEditingController _valueEvent = TextEditingController();
 
-  Widget RadioButton({int value, Function onChanged}) {
+  Widget radioButton({int value, Function onChanged}) {
     return Theme(
         data: Theme.of(context).copyWith(
           unselectedWidgetColor: Colors.black,
@@ -339,7 +338,7 @@ class _WrittingState extends State<Writting> {
                               ),
                               Row(
                                 children: <Widget>[
-                                  RadioButton(
+                                  radioButton(
                                       value: 1,
                                       onChanged: (newValue) {
                                         setState(() {
@@ -354,7 +353,7 @@ class _WrittingState extends State<Writting> {
                                           _groupValue = 1;
                                         });
                                       }),
-                                  RadioButton(
+                                  radioButton(
                                       value: 2,
                                       onChanged: (newValue) {
                                         setState(() {
@@ -441,7 +440,7 @@ class _WrittingState extends State<Writting> {
                                       if (atualizing) {
                                         final note = Anotation(
                                             value:
-                                                double.parse(_valueEvent.text),
+                                                _valueEvent.text,
                                             title: _tituloEvent.text,
                                             type: _groupValue == 1
                                                 ? 'Crédito'
@@ -451,7 +450,7 @@ class _WrittingState extends State<Writting> {
                                       } else {
                                         final note = Anotation(
                                             value:
-                                                double.parse(_valueEvent.text),
+                                                _valueEvent.text,
                                             title: _tituloEvent.text,
                                             day: DateTime.now().day.toString(),
                                             month:

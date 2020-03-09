@@ -35,7 +35,7 @@ class _DrummerNoteState extends State<DrummerNote> {
   }
 
   start() async {
-    await dbHandler.initDB();
+    dbHandler.initDB();
     await getNotes();
   }
 
@@ -71,7 +71,7 @@ class _DrummerNoteState extends State<DrummerNote> {
                     Container(
                         height: MediaQuery.of(context).size.height <= 600
                             ? 80
-                            : 120,
+                            : 110,
                         color: Colors.white60,
                       child: Center(
                         child: Image.asset('assets/note.png', color: Colors.black26),
@@ -93,7 +93,7 @@ class _DrummerNoteState extends State<DrummerNote> {
                                   fontSize:
                                   MediaQuery.of(context).size.height <= 400
                                       ? 18
-                                      : 25,
+                                      : 22,
                                 )),
                           ),
                           InkWell(

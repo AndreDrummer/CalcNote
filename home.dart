@@ -31,7 +31,7 @@ class _DrummerNoteState extends State<DrummerNote> {
   }
 
   start() async {
-    await dbHandler.initDB();
+    dbHandler.initDB();
     await getNotes();
   }
 

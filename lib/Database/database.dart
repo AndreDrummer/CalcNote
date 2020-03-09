@@ -46,7 +46,7 @@ class DataBaseHandler {
   Future<void> delete(id, table) async {
      final db =  await database;
 
-     print("DeletingID ${id}");
+     print("DeletingID $id");
 
      await db.delete(table,
          where: "id = ?",

@@ -17,7 +17,6 @@ class _WrittingState extends State<Writting> {
   final dbHandler = DataBaseHandler.instance;
   bool inserting = false;
   bool atualizing = false;
-  AnimationController _controller;
   int _groupValue = 1; // type = Crédito
   List notes = List();
   List valuesAgregado = List();
@@ -34,7 +33,7 @@ class _WrittingState extends State<Writting> {
   TextEditingController _valueEvent = TextEditingController();
   int idAtualize;
 
-  Widget RadioButton({int value, Function onChanged}) {
+  Widget radioButton({int value, Function onChanged}) {
     return Theme(
         data: Theme.of(context).copyWith(
           unselectedWidgetColor: Colors.black,
@@ -88,12 +87,12 @@ class _WrittingState extends State<Writting> {
       });
       print("Values $valuesAgregado");
       totalAgregado = valuesAgregado.reduce(combineReducer);
-      valuesCredito.isNotEmpty
-          ? totalCredito = valuesCredito.reduce(combineReducer)
-          : () {};
-      valuesDividas.isNotEmpty
-          ? totalDividas = valuesDividas.reduce(combineReducer)
-          : () {};
+      if(valuesCredito.isNotEmpty) {
+        totalCredito = valuesCredito.reduce(combineReducer);
+      }
+      if(valuesDividas.isNotEmpty) {
+        totalDividas = valuesDividas.reduce(combineReducer);
+      }
     }
   }
 
@@ -391,7 +390,7 @@ class _WrittingState extends State<Writting> {
                                 ),
                                 Row(
                                   children: <Widget>[
-                                    RadioButton(
+                                    radioButton(
                                         value: 1,
                                         onChanged: (newValue) {
                                           setState(() {
@@ -406,7 +405,7 @@ class _WrittingState extends State<Writting> {
                                             _groupValue = 1;
                                           });
                                         }),
-                                    RadioButton(
+                                    radioButton(
                                         value: 2,
                                         onChanged: (newValue) {
                                           setState(() {
