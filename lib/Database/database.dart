@@ -17,7 +17,7 @@ class DataBaseHandler {
             'CREATE TABLE CalcNotes(id INTEGER PRIMARY KEY, tema TEXT, cardColor TEXT)'
         );
         await db.execute(
-            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type TEXT, value REAL, day STRING, month TEXT, year STRING, tema TEXT)'
+            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type TEXT, value TEXT, day STRING, month TEXT, year STRING, tema TEXT)'
         );
       },
       version: 1,
@@ -35,6 +35,8 @@ class DataBaseHandler {
   Future<void> update(data, table) async {
     final db =  await database;
 
+    print("Updating ID ${data.id}");
+
     await db.update(table, data.toMap(),
       where: "id = ?",
       whereArgs: [data.id]
@@ -43,6 +45,8 @@ class DataBaseHandler {
 
   Future<void> delete(id, table) async {
      final db =  await database;
+
+     print("DeletingID ${id}");
 
      await db.delete(table,
          where: "id = ?",
@@ -58,7 +62,22 @@ class DataBaseHandler {
          whereArgs: [param]
      );
 
-     return notes;
+     return List.generate(notes.length, (i) {
+
+       print("${notes[i]['day'].runtimeType}");
+
+       return Anotation(
+         id: notes[i]['id'],
+         title: notes[i]['title'],
+         type: notes[i]['type'],
+         value: notes[i]['value'],
+         day: notes[i]['day'],
+         month: notes[i]['month'],
+         year: notes[i]['year'],
+       );
+     });
+
+//     return notes;
    }
 
   Future<List> getAnotation() async {
@@ -66,18 +85,19 @@ class DataBaseHandler {
 
     final List<Map<String, dynamic>> notes = await db.query('Anotation');
 
-    return notes;
+//    return notes;
 
-//    return List.generate(maps.length, (i) {
-//      return Anotation(
-//          title: maps[i]['title'],
-//          type: maps[i]['type'],
-//          value: maps[i]['value'],
-//          day: maps[i]['day'],
-//          month: maps[i]['month'],
-//          year: maps[i]['year'],
-//      );
-//    });
+    return List.generate(notes.length, (i) {
+      return Anotation(
+          id: notes[i]['id'],
+          title: notes[i]['title'],
+          type: notes[i]['type'],
+          value: notes[i]['value'],
+          day: notes[i]['day'],
+          month: notes[i]['month'],
+          year: notes[i]['year'],
+      );
+    });
   }
 
   Future<List<CalcNote>> getCalcNotes() async {

@@ -15,16 +15,18 @@ class CalcNote {
 }
 
 class Anotation {
+  final int id;
   final String title;
   final String type;
-  final double value;
+  final String value;
   final String day;
   final String month;
   final String year;
   final String tema;
 
   Anotation(
-      {this.title,
+      {this.id,
+        this.title,
       this.type,
       this.value,
       this.day,
@@ -34,6 +36,7 @@ class Anotation {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'title': title,
       'type': type,
       'value': value,
