@@ -1,16 +1,14 @@
-# flutter_app
+# Calc Note
 
-A new Flutter application.
+Um aplicativo para fazer anotações de gastos e créditos. Sempre que realizar um gasto você pode anotar nesse Bloco de Notas inserindo nome do gasto e seu valor e o Calc Note irá totalizar sem que você precise usar calculadora. O mesmo acontece quando você adiciona um crédito. 
+O app mostra o total de créditos e o total de dívidas e ainda mostra um agregado desses valores mostrando se você tem mais créditos ou mais dívidas.
 
-## Getting Started
+## Iniciando
 
-This project is a starting point for a Flutter application.
+Este projeto é um ponto de partida para um aplicativo Flutter.
 
-A few resources to get you started if this is your first Flutter project:
+Alguns recursos para você começar se este for seu primeiro projeto Flutter:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Laboratório: escreva seu primeiro aplicativo Flutter
+Livro de receitas: Amostras úteis de flutter
+Para obter ajuda sobre como iniciar o Flutter, consulte nossa documentação on-line , que oferece tutoriais, exemplos, orientações sobre desenvolvimento para dispositivos móveis e uma referência completa da API.
