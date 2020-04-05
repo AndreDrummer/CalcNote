@@ -1,16 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:calcnote/UI/home.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-final ThemeData iOSTheme = new ThemeData(
-    primarySwatch: Colors.black,
-    primaryColor: Colors.black,
-    primaryColorBrightness: Brightness.dark);
+void main() => (runApp(CalcNoteHome()));
 
-final ThemeData androidTheme =
-    new ThemeData(primarySwatch: Colors.black, accentColor: Colors.black);
-
-void main() => (runApp(MaterialApp(
+class CalcNoteHome extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en'), // English
+        const Locale('he'), // Hebrew
+        const Locale.fromSubtags(languageCode: 'zh'),
+      ],
       debugShowCheckedModeBanner: false,
       title: 'CalcNote',
       home: DrummerNote(),
-    )));
+      theme: ThemeData(
+          textTheme: ThemeData.light().textTheme.copyWith(
+              title: TextStyle(
+                fontSize: 28,
+              ),
+              subtitle: TextStyle(
+                fontSize: 13,
+                color: Colors.grey
+              ),
+              headline: TextStyle(
+                  fontSize: 16,
+                fontWeight: FontWeight.bold
+              ),
+              caption: TextStyle(
+                fontSize: 16,
+                  color: Colors.purple,
+              ),
+              button: TextStyle(
+                fontSize: 16,
+                color: Colors.purple,
+              )),
+          primarySwatch: Colors.purple,
+          accentColor: Colors.green),
+    );
+  }
+}

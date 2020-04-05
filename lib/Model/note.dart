@@ -18,10 +18,8 @@ class Anotation {
   final int id;
   final String title;
   final String type;
-  final String value;
-  final String day;
-  final String month;
-  final String year;
+  final double value;
+  final String date;
   final String tema;
 
   Anotation(
@@ -29,9 +27,7 @@ class Anotation {
         this.title,
       this.type,
       this.value,
-      this.day,
-      this.month,
-      this.year,
+      this.date,
       this.tema});
 
   Map<String, dynamic> toMap() {
@@ -40,9 +36,7 @@ class Anotation {
       'title': title,
       'type': type,
       'value': value,
-      'day': day,
-      'month': month,
-      'year': year,
+      'date': date,
       'tema': tema,
     };
   }

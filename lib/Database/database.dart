@@ -17,7 +17,7 @@ class DataBaseHandler {
             'CREATE TABLE CalcNotes(id INTEGER PRIMARY KEY, tema TEXT, cardColor TEXT)'
         );
         await db.execute(
-            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type TEXT, value TEXT, day STRING, month TEXT, year STRING, tema TEXT)'
+            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type TEXT, value REAL, date TEXT, tema TEXT)'
         );
       },
       version: 1,
@@ -64,16 +64,13 @@ class DataBaseHandler {
 
      return List.generate(notes.length, (i) {
 
-       print("${notes[i]['day'].runtimeType}");
-
        return Anotation(
          id: notes[i]['id'],
          title: notes[i]['title'],
          type: notes[i]['type'],
          value: notes[i]['value'],
-         day: notes[i]['day'],
-         month: notes[i]['month'],
-         year: notes[i]['year'],
+         date: notes[i]['date'],
+         tema: notes[i]['tema']
        );
      });
 
@@ -93,9 +90,7 @@ class DataBaseHandler {
           title: notes[i]['title'],
           type: notes[i]['type'],
           value: notes[i]['value'],
-          day: notes[i]['day'],
-          month: notes[i]['month'],
-          year: notes[i]['year'],
+          date: notes[i]['date'],
       );
     });
   }
