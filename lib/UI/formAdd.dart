@@ -31,8 +31,25 @@ class _FormAddState extends State<FormAdd> {
   TextEditingController _tituloEvent = TextEditingController();
   TextEditingController _valueEvent = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  DateTime hoje = DateTime.now();
 
   final db = DataBaseHandler.instance;
+
+  bool compareDates() {
+    var hojeDia = hoje.day;
+    var hojeMes = hoje.month;
+    var hojeAno = hoje.year;
+
+    var selectDia = _selectedDate.day;
+    var selectMes = _selectedDate.month;
+    var selectAno = _selectedDate.year;
+
+    if((hojeDia == selectDia) && (hojeMes == selectMes) && (hojeAno == selectAno)){
+      return true;
+    }
+
+    return false;
+  }
 
   _openCalendar() {
     showDatePicker(
@@ -181,12 +198,12 @@ class _FormAddState extends State<FormAdd> {
                   children: <Widget>[
                     Expanded(
                         child: Text(
-                      "Hoje: ${_selectedDate == null ? '' : DateFormat('dd/MM/y').format(_selectedDate)}",
+                      "${compareDates() ? 'Hoje' : 'Data'}: ${_selectedDate == null ? '' : DateFormat('dd/MM/y').format(_selectedDate)}",
                       style: Theme.of(context).textTheme.headline,
                     )),
                     FlatButton(
                       child: Text(
-                        "Selecionar data",
+                        _selectedDate == null ? 'Selecionar Data' : "Alterar data",
                         style: Theme.of(context).textTheme.button,
                       ),
                       onPressed: _openCalendar,
