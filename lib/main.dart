@@ -24,6 +24,18 @@ class CalcNoteHome extends StatelessWidget {
       theme: ThemeData(
           textTheme: ThemeData.light().textTheme.copyWith(
               title: TextStyle(
+                fontFamily: 'OpenSans',
+                fontSize: 28,
+              ),
+              display1: TextStyle(
+                fontFamily: 'OpenSans',
+                color: Colors.black,
+                fontSize: 20,
+              ),
+              display2: TextStyle(
+                fontFamily: 'OpenSans',
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
                 fontSize: 28,
               ),
               subtitle: TextStyle(
@@ -32,14 +44,18 @@ class CalcNoteHome extends StatelessWidget {
               ),
               headline: TextStyle(
                   fontSize: 16,
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Quicksand',
               ),
               caption: TextStyle(
                 fontSize: 16,
+                fontFamily: 'Quicksand',
                   color: Colors.purple,
               ),
               button: TextStyle(
                 fontSize: 16,
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
                 color: Colors.purple,
               )),
           primarySwatch: Colors.purple,

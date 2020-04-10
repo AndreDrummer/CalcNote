@@ -17,7 +17,7 @@ class CalcNote {
 class Anotation {
   final int id;
   final String title;
-  final String type;
+  final int type;
   final double value;
   final String date;
   final String tema;

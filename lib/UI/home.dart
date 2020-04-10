@@ -3,6 +3,7 @@ import 'package:calcnote/UI/writting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:calcnote/Database/database.dart';
+import '../Model/note.dart';
 
 final db = DataBaseHandler.instance;
 
@@ -56,126 +57,44 @@ class _DrummerNoteState extends State<DrummerNote> {
     });
   }
 
-  List<Card> _buildCardsView(List calc, int count) {
-    List<Card> cards = List.generate(
+  _delete(CalcNote calc) {
+    db.deleteAll(calc.tema, 'CalcNotes').then((deleted) {
+      db.deleteAll(calc.tema, 'Anotation');
+      setState(() {
+        getNotes().then((reloaded) {
+          _scaffoldKey.currentState.showSnackBar(SnackBar(
+              content: Text('Nota Excluída!',
+                  style: TextStyle(fontWeight: FontWeight.w600))));
+        });
+      });
+    });
+  }
+
+  List<Widget> _buildCardsView(List calc, int count, context) {
+    List<Widget> cards = List.generate(
         count,
-        (int index) => Card(
-              elevation: 7.0,
-              color: Theme.of(context).primaryColor,
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              Writting(tema: calc[index].tema)));
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height:
-                          MediaQuery.of(context).size.height <= 600 ? 80 : 110,
-                      color: Colors.white60,
-                      child: Center(
-                        child: Image.asset('assets/note.png',
-                            color: Colors.black26),
-                      ),
-                    ),
-                    SizedBox(
-                        height: MediaQuery.of(context).size.height <= 400
-                            ? 20
-                            : 15),
-                    Container(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Flexible(
-                            child: Text(
-                                calc[index].tema.toString().length > 9
-                                    ? "${calc[index].tema.toString().substring(0, 9)}..."
-                                    : calc[index].tema,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.height <= 400
-                                          ? 18
-                                          : 22,
-                                )),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext contexto) {
-                                    return AlertDialog(
-                                      title: Text('Excluir'),
-                                      content: Text(
-                                          'Deseja deletar a  nota ${calc[index].tema}?'),
-                                      actions: <Widget>[
-                                        ButtonBar(
-                                          children: <Widget>[
-                                            FlatButton(
-                                                child: Text("Sim"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  db
-                                                      .delete(calc[index].id,
-                                                          'CalcNotes')
-                                                      .then((deleted) {
-                                                    setState(() {
-                                                      getNotes()
-                                                          .then((reloaded) {
-                                                        _scaffoldKey
-                                                            .currentState
-                                                            .showSnackBar(SnackBar(
-                                                                content: Text(
-                                                                    'Nota Excluída!',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.w600))));
-                                                      });
-                                                    });
-                                                  });
-                                                },
-                                                color: Colors.red,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12))),
-                                            FlatButton(
-                                                child: Text("Não"),
-                                                onPressed: () {
-                                                  Navigator.pop(contexto);
-                                                },
-                                                color: Colors.green,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12)))
-                                          ],
-                                        )
-                                      ],
-                                    );
-                                  });
-                            },
-                            child: Icon(Icons.delete,
-                                size: MediaQuery.of(context).size.height <= 400
-                                    ? 25
-                                    : 30,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+        (int index) => InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            Writting(tema: calc[index].tema)));
+              },
+              child: CardNote(
+                label: calc[index].tema,
+                alterDB: () => _delete(calc[index]),
               ),
             ));
     return cards;
+  }
+
+  bool showFloatingButton () {
+    if(MediaQuery.of(context).orientation == Orientation.portrait && !isAdding && state == 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -228,12 +147,15 @@ class _DrummerNoteState extends State<DrummerNote> {
                 onRefresh: getNotes,
                 child: Stack(
                   children: <Widget>[
-                    SizedBox(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        padding: const EdgeInsets.all(4.0),
-                        childAspectRatio: 8.0 / 9.0,
-                        children: _buildCardsView(calcs, calcs.length),
+                    InkWell(
+                      child: SizedBox(
+                        child: GridView.count(
+                          crossAxisCount: MediaQuery.of(context).orientation == Orientation.landscape ? 4 : 2,
+                          padding: const EdgeInsets.all(4.0),
+                          childAspectRatio: MediaQuery.of(context).orientation == Orientation.landscape ? 1.0 / 2.0 : 10.0 / 18,
+                          children:
+                              _buildCardsView(calcs, calcs.length, context),
+                        ),
                       ),
                     ),
                     isAdding
@@ -244,13 +166,14 @@ class _DrummerNoteState extends State<DrummerNote> {
                         : SizedBox(),
                     isAdding
                         ? CardNote(
-                            getNotes: getNotes,
+                            alterDB: getNotes,
                             setIsInserting: isInserting,
+                            label: null,
                           )
                         : calcs.isEmpty
                             ? Center(
                                 child: Text(
-                                  "Clique em  + ",
+                                  "${MediaQuery.of(context).orientation == Orientation.portrait ? 'Clique em  +' : 'Não há notas.' }",
                                   style: Theme.of(context).textTheme.title,
                                 ),
                               )
@@ -258,9 +181,9 @@ class _DrummerNoteState extends State<DrummerNote> {
                   ],
                 ),
               ),
-        floatingActionButton: !isAdding && state == 1
+        floatingActionButton: showFloatingButton()
             ? FloatingActionButton(
-                onPressed: () {
+                     onPressed: () {
                   setState(() {
                     isAdding = !isAdding;
                   });

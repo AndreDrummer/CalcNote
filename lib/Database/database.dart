@@ -14,10 +14,10 @@ class DataBaseHandler {
       join(await getDatabasesPath(), 'calcnote.db'),
       onCreate: (db, version) async {
         await db.execute(
-            'CREATE TABLE CalcNotes(id INTEGER PRIMARY KEY, tema TEXT, cardColor TEXT)'
+            'CREATE TABLE CalcNotes(id INTEGER PRIMARY KEY, tema TEXT UNIQUE, cardColor TEXT)'
         );
         await db.execute(
-            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type TEXT, value REAL, date TEXT, tema TEXT)'
+            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type INTEGER, value REAL, date TEXT, tema TEXT)'
         );
       },
       version: 1,
@@ -46,13 +46,21 @@ class DataBaseHandler {
   Future<void> delete(id, table) async {
      final db =  await database;
 
-     print("DeletingID $id");
-
      await db.delete(table,
          where: "id = ?",
          whereArgs: [id]
      );
    }
+
+   Future<void> deleteAll(tema, table) async {
+     final db =  await database;
+
+     await db.delete(table,
+         where: "tema = ?",
+         whereArgs: [tema]
+     );
+   }
+
 
    Future<List> queryParams(param, table) async {
      final db =  await database;

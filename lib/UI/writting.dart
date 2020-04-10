@@ -52,7 +52,7 @@ class _WrittingState extends State<Writting> {
     return "$reais,${centavos.substring(0, 2)}";
   }
 
-  combineReducer(valueA, valueB) {   
+  combineReducer(valueA, valueB) {
     return valueA + valueB;
   }
 
@@ -60,7 +60,7 @@ class _WrittingState extends State<Writting> {
     print("Limpar lista");
     if (notes.isNotEmpty) {
       notes.forEach((note) {
-        if (note.type == 'Crédito') {
+        if (note.type == 1) {
           valuesAgregado.add(note.value);
           valuesCredito.add(note.value);
         } else {
@@ -79,8 +79,9 @@ class _WrittingState extends State<Writting> {
     }
   }
 
-  openModalForm(int groupValue, String tema) { 
-    showDialog(
+  openModalForm(int groupValue, String tema) {
+    showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (_) {
         return FormAdd(
@@ -120,14 +121,71 @@ class _WrittingState extends State<Writting> {
     });
   }
 
+  List<String> orderItens = [
+    'Data mais recente',
+    'Data mais antiga',
+    'Maior valor',
+    'Menor valor',
+    'Dívida primeiro',
+    'Crédito primeiro'
+  ];
+  String dropValue = 'Data mais recente';
+
+  int _sort(item1, item2) {
+    if (dropValue == 'Data mais antiga') {
+      if (DateTime.parse(item1.date).millisecondsSinceEpoch >
+          DateTime.parse(item2.date).millisecondsSinceEpoch) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } else if (dropValue == 'Data mais recente') {
+      if (DateTime.parse(item2.date).millisecondsSinceEpoch >
+          DateTime.parse(item1.date).millisecondsSinceEpoch) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } else if (dropValue == 'Maior valor') {
+      if (item2.value > item1.value) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } else if (dropValue == 'Menor valor') {
+      if (item1.value > item2.value) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } else if (dropValue == 'Dívida primeiro') {
+      if (item2.type > item1.type) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } else {
+      if (item1.type > item2.type) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+  }
+
+  _orderList() {
+    notes.sort(_sort);
+  }
+
   @override
   void initState() {
-    super.initState(); 
+    super.initState();
     getRegisters().then((done) {
       if (notes.isNotEmpty) {
         arrayValues();
       }
     });
+    _orderList();
   }
 
   @override
@@ -149,95 +207,88 @@ class _WrittingState extends State<Writting> {
                     children: <Widget>[
                       Card(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0)
-                        ),
+                            borderRadius: BorderRadius.circular(8.0)),
                         elevation: 20,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                          "Créditos: R\$ ${currencyPattern(totalCredito.toString())}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: MediaQuery.of(context)
-                                                        .size
-                                                        .width <=
-                                                    400
-                                                ? 18
-                                                : 25,
-                                          )),
-                                    ],
+                                  Text(
+                                    "Créditos: R\$ ${currencyPattern(totalCredito.toString())}",
+                                    style: Theme.of(context).textTheme.display1,
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                          "Dívidas:   R\$ ${currencyPattern(totalDividas.toString())}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: MediaQuery.of(context)
-                                                        .size
-                                                        .width <=
-                                                    400
-                                                ? 18
-                                                : 25,
-                                          ))
-                                    ],
+                                  Text(
+                                    "Dívidas: R\$ ${currencyPattern(totalDividas.toString())}",
+                                    style: Theme.of(context).textTheme.display1,
                                   ),
-                                  Divider(
-                                      color: Theme.of(context).primaryColor),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text("Saldo: ",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 25,
-                                          color: totalAgregado > 0
-                                              ? Colors.green : totalAgregado == 0 ?  Colors.amber
-                                              : Colors.red,
-                                          )),
-                                      Text(
-                                          " R\$ ${currencyPattern(totalAgregado.toString())}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: totalAgregado > 0
-                                                ? Colors.green : totalAgregado == 0 ?  Colors.amber
+                                  Divider(color: Theme.of(context).accentColor),
+                                  Text(
+                                      "Saldo: R\$ ${currencyPattern(totalAgregado.toString())}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: totalAgregado > 0
+                                            ? Colors.green
+                                            : totalAgregado == 0
+                                                ? Colors.amber
                                                 : Colors.red,
-                                            fontSize: MediaQuery.of(context)
-                                                        .size
-                                                        .width <=
+                                        fontSize:
+                                            MediaQuery.of(context).size.width <=
                                                     400
                                                 ? 18
                                                 : 25,
-                                          ))
-                                    ],
-                                  )
+                                      )),
                                 ],
                               ),
-                              Container(
-                                height: 80,
-                                width: 80,
-                                child: Image.asset(
-                                  'assets/cifrao.png',
-                                  color: totalAgregado > 0
-                                      ? Colors.green : totalAgregado == 0 ?  Colors.amber
-                                      : Colors.red,
-                                  fit: BoxFit.cover,
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: MediaQuery.of(context).size.width <= 400 ? 40 : 320,
+                                ),
+                                child: Container(
+                                  height: 60,
+                                  width: 60,
+                                  child: Image.asset(
+                                    'assets/cifrao.png',
+                                    color: totalAgregado > 0
+                                        ? Colors.green
+                                        : totalAgregado == 0
+                                            ? Colors.amber
+                                            : Colors.red,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               )
                             ],
                           ),
                         ),
                       ),
+                      notes.length > 0 ?
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Container(
+                          width: double.infinity,
+                          child: DropdownButton<String>(
+                              value: dropValue,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  dropValue = newValue;
+                                  _orderList();
+                                });
+                              },
+                              isExpanded: true,
+                              items: orderItens
+                                  .map<DropdownMenuItem<String>>((item) {
+                                return DropdownMenuItem<String>(
+                                  child: Text(item),
+                                  value: item,
+                                );
+                              }).toList()),
+                        ),
+                      ) : Container(),
                       SizedBox(
                         height: MediaQuery.of(context).size.height <= 600
                             ? 290
@@ -247,7 +298,7 @@ class _WrittingState extends State<Writting> {
                             child: notes.isEmpty
                                 ? Column(
                                     children: <Widget>[
-                                      SizedBox(height: 50),
+                                      SizedBox(height: 30),
                                       Center(
                                         child: Text("Nenhuma nota registrada!",
                                             style: TextStyle(
@@ -255,19 +306,19 @@ class _WrittingState extends State<Writting> {
                                               fontSize: 20,
                                             )),
                                       ),
-                                      SizedBox(height: 50),
+                                      SizedBox(height: 30),
                                       Container(
-                                        height: 200,
+                                        height: 190,
                                         child: Image.asset('assets/waiting.png',
                                             fit: BoxFit.cover),
                                       )
                                     ],
                                   )
                                 : ListNote(
-                              scaffoldKey: _scaffoldKey,
-                              notas: notes,
-                              atualizar: atualize,
-                            )),
+                                    scaffoldKey: _scaffoldKey,
+                                    notas: notes,
+                                    atualizar: atualize,
+                                  )),
                       ),
                     ],
                   ),
@@ -277,12 +328,12 @@ class _WrittingState extends State<Writting> {
           );
         },
       ),
-      floatingActionButton: SpeedDial(        
+      floatingActionButton: SpeedDial(
         marginRight: 18,
         marginBottom: 20,
         animatedIcon: AnimatedIcons.add_event,
-        animatedIconTheme: IconThemeData(size: 22.0),        
-        visible: true,        
+        animatedIconTheme: IconThemeData(size: 22.0),
+        visible: MediaQuery.of(context).orientation == Orientation.portrait,
         closeManually: false,
         curve: Curves.bounceIn,
         overlayOpacity: 0.5,
@@ -304,15 +355,13 @@ class _WrittingState extends State<Writting> {
               backgroundColor: Colors.red,
               label: 'Dívida',
               labelStyle: TextStyle(fontSize: 18.0),
-              onTap: () => openModalForm(2, widget.tema)
-              ),
+              onTap: () => openModalForm(2, widget.tema)),
           SpeedDialChild(
               child: Icon(Icons.attach_money),
               backgroundColor: Colors.green,
               label: 'Crédito',
               labelStyle: TextStyle(fontSize: 18.0),
-              onTap: () => openModalForm(1, widget.tema)
-              ),
+              onTap: () => openModalForm(1, widget.tema)),
         ],
       ),
     );

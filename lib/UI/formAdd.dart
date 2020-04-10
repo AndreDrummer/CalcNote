@@ -44,7 +44,9 @@ class _FormAddState extends State<FormAdd> {
     var selectMes = _selectedDate.month;
     var selectAno = _selectedDate.year;
 
-    if((hojeDia == selectDia) && (hojeMes == selectMes) && (hojeAno == selectAno)){
+    if ((hojeDia == selectDia) &&
+        (hojeMes == selectMes) &&
+        (hojeAno == selectAno)) {
       return true;
     }
 
@@ -57,7 +59,7 @@ class _FormAddState extends State<FormAdd> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 730)), // 2 anos
     ).then((datePicker) {
       if (datePicker == null) {
         return;
@@ -71,8 +73,8 @@ class _FormAddState extends State<FormAdd> {
   @override
   void initState() {
     super.initState();
-    _groupValue = widget.groupValue;    
-    if(widget.atualizing) {          
+    _groupValue = widget.groupValue;
+    if (widget.atualizing) {
       _tituloEvent.text = widget.edittingNote.title;
       _valueEvent.text = widget.edittingNote.value.toString();
       _selectedDate = DateTime.parse(widget.edittingNote.date);
@@ -89,6 +91,9 @@ class _FormAddState extends State<FormAdd> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: <Widget>[
+              SizedBox(
+                height: 12,
+              ),
               Align(
                 alignment: Alignment(-0.91, 1),
                 child: Text('Tipo de Anotação',
@@ -147,20 +152,13 @@ class _FormAddState extends State<FormAdd> {
                 decoration: InputDecoration(
                     errorStyle: TextStyle(fontSize: 16),
                     disabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-
-                            style: BorderStyle.solid)),
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                     enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-
-                            style: BorderStyle.solid)),
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                     focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-
-                            style: BorderStyle.solid)),
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                     labelText: 'Nome da nota',
-                    labelStyle: TextStyle(
-                        fontWeight: FontWeight.w600)),
+                    labelStyle: TextStyle(fontWeight: FontWeight.w600)),
               ),
               TextFormField(
                 validator: (String value) {
@@ -173,24 +171,19 @@ class _FormAddState extends State<FormAdd> {
                   }
                 },
                 controller: _valueEvent,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.numberWithOptions(
+                    decimal: true, signed: true),
                 decoration: InputDecoration(
                     errorStyle: TextStyle(fontSize: 16),
                     disabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-
-                            style: BorderStyle.solid)),
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                     enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-
-                            style: BorderStyle.solid)),
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                     focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            style: BorderStyle.solid)),
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                     prefix: Text("R\$   "),
                     labelText: 'Valor',
-                    labelStyle: TextStyle(
-                        fontWeight: FontWeight.w600)),
+                    labelStyle: TextStyle(fontWeight: FontWeight.w600)),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -203,7 +196,9 @@ class _FormAddState extends State<FormAdd> {
                     )),
                     FlatButton(
                       child: Text(
-                        _selectedDate == null ? 'Selecionar Data' : "Alterar data",
+                        _selectedDate == null
+                            ? 'Selecionar Data'
+                            : "Alterar data",
                         style: Theme.of(context).textTheme.button,
                       ),
                       onPressed: _openCalendar,
@@ -228,14 +223,15 @@ class _FormAddState extends State<FormAdd> {
                   RaisedButton(
                     onPressed: () {
                       if (formStateKey.currentState.validate()) {
-                        if (widget.atualizing) {                          
+                        if (widget.atualizing) {
                           final note = Anotation(
-                              id: widget.edittingNote.id,
-                              value: double.tryParse(_valueEvent.text),
-                              title: _tituloEvent.text,
-                              tema: widget.edittingNote.tema,
-                              date: _selectedDate.toString(),
-                              type: _groupValue == 1 ? 'Crédito' : 'Dívida');                          
+                            id: widget.edittingNote.id,
+                            value: double.tryParse(_valueEvent.text),
+                            title: _tituloEvent.text,
+                            tema: widget.edittingNote.tema,
+                            date: _selectedDate.toString(),
+                            type: _groupValue,
+                          );
                           db.update(note, 'Anotation').then((atualized) {
                             _valueEvent.clear();
                             _tituloEvent.clear();
@@ -246,9 +242,9 @@ class _FormAddState extends State<FormAdd> {
                             value: double.tryParse(_valueEvent.text),
                             title: _tituloEvent.text,
                             date: _selectedDate.toString(),
-                            type: _groupValue == 1 ? 'Crédito' : 'Dívida',
+                            type: _groupValue,
                             tema: widget.tema,
-                          );                         
+                          );
                           db.insert(note, 'Anotation').then((done) {
                             _valueEvent.clear();
                             _tituloEvent.clear();
