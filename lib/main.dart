@@ -23,26 +23,26 @@ class CalcNoteHome extends StatelessWidget {
       home: DrummerNote(),
       theme: ThemeData(
           textTheme: ThemeData.light().textTheme.copyWith(
-              title: TextStyle(
+              headline6: TextStyle(
                 fontFamily: 'OpenSans',
                 fontSize: 28,
               ),
-              display1: TextStyle(
+              headline4: TextStyle(
                 fontFamily: 'OpenSans',
                 color: Colors.black,
                 fontSize: 20,
               ),
-              display2: TextStyle(
+              headline3: TextStyle(
                 fontFamily: 'OpenSans',
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 28,
               ),
-              subtitle: TextStyle(
+              subtitle2: TextStyle(
                 fontSize: 13,
                 color: Colors.grey
               ),
-              headline: TextStyle(
+              headline5: TextStyle(
                   fontSize: 16,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Quicksand',

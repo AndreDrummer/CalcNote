@@ -8,10 +8,16 @@ final db = DataBaseHandler.instance;
 class CardNote extends StatefulWidget {
   final Function() setIsInserting;
   final void Function() alterDB;
+  final void Function(String) updateDB;
   final Widget button;
   final String label;
 
-  CardNote({this.alterDB, this.setIsInserting, this.button, this.label});
+  CardNote(
+      {this.alterDB,
+      this.updateDB,
+      this.setIsInserting,
+      this.button,
+      this.label});
 
   @override
   _CardNoteState createState() => _CardNoteState();
@@ -19,6 +25,14 @@ class CardNote extends StatefulWidget {
 
 class _CardNoteState extends State<CardNote> {
   TextEditingController _newNote = TextEditingController(text: 'Título');
+  TextEditingController _cardNoteTitle;
+  bool isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _cardNoteTitle = TextEditingController(text: widget.label);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,12 +154,6 @@ class _CardNoteState extends State<CardNote> {
                                                               FontWeight.w600,
                                                           color: Colors.white),
                                                     ),
-//                                          actions: <Widget>[
-//                                            FlatButton(
-//                                              child: Text('OK'),
-//                                              onPressed: (){ Navigator.pop(context); },
-//                                            )
-//                                          ],
                                                   );
                                                 });
                                           } else {
@@ -165,32 +173,61 @@ class _CardNoteState extends State<CardNote> {
                                   children: <Widget>[
                                     Container(
                                       height: constraints.maxHeight * 0.27,
-                                      child: Text(widget.label,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .display2),
+                                      child: isEditing
+                                          ? TextFormField(
+                                              controller: _cardNoteTitle,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline3,
+                                              decoration: InputDecoration(
+                                                  enabledBorder:
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              style: BorderStyle
+                                                                  .none))),
+                                            )
+                                          : Text(_cardNoteTitle.text,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline3),
                                     ),
                                     Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                          MainAxisAlignment.spaceEvenly,
                                       children: <Widget>[
                                         InkWell(
                                           onTap: () {
                                             showDialog(
-                                                context: context,
-                                                builder: (_) => DialogMessage(
-                                                      onConfirm: widget.alterDB,
-                                                      message:
-                                                          'Deletar esse bloco e todas suas anotações',
-                                                      confirmAction: 'Sim',
-                                                      denyAction: 'Não',
-                                                      enfase: widget.label,
-                                                      title:
-                                                          'Excluir',
-                                                    ));
+                                              context: context,
+                                              builder: (_) => DialogMessage(
+                                                onConfirm: widget.alterDB,
+                                                message:
+                                                    'Deletar esse bloco e todas suas anotações',
+                                                confirmAction: 'Sim',
+                                                denyAction: 'Não',
+                                                enfase: widget.label,
+                                                title: 'Excluir',
+                                              ),
+                                            );
                                           },
                                           child: Icon(
                                             Icons.delete,
+                                            color: Colors.white,
+                                            size: 40,
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            if (isEditing) {                                             
+                                              widget.updateDB(_cardNoteTitle.text);
+                                            }
+
+                                            setState(() {
+                                              isEditing = !isEditing;
+                                            });
+                                          },
+                                          child: Icon(
+                                            isEditing ? Icons.save : Icons.edit,
                                             color: Colors.white,
                                             size: 40,
                                           ),

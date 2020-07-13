@@ -3,87 +3,79 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DataBaseHandler {
+  Future<Database> database;
 
-   Future<Database> database;
+  DataBaseHandler._constructor();
+  static final DataBaseHandler instance = DataBaseHandler._constructor();
 
-   DataBaseHandler._constructor();
-   static final DataBaseHandler instance = DataBaseHandler._constructor();
-
-  void initDB() async {
+  Future<void> initDB() async {
     database = openDatabase(
       join(await getDatabasesPath(), 'calcnote.db'),
       onCreate: (db, version) async {
         await db.execute(
-            'CREATE TABLE CalcNotes(id INTEGER PRIMARY KEY, tema TEXT UNIQUE, cardColor TEXT)'
-        );
+            'CREATE TABLE CalcNotes(id INTEGER PRIMARY KEY, tema TEXT UNIQUE, cardColor TEXT)');
         await db.execute(
-            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type INTEGER, value REAL, date TEXT, tema TEXT)'
-        );
+            'CREATE TABLE Anotation(id INTEGER PRIMARY KEY, title TEXT, type INTEGER, value REAL, date TEXT, tema TEXT)');
       },
       version: 1,
     );
+
+    return Future.value();
   }
 
   Future<void> insert(data, String table) async {
     final Database db = await database;
 
     await db.insert(table, data.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace
-    );
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> update(data, table) async {
-    final db =  await database;
+    final db = await database;
 
     print("Updating ID ${data.id}");
 
-    await db.update(table, data.toMap(),
-      where: "id = ?",
-      whereArgs: [data.id]
-    );
+    await db.update(table, data.toMap(), where: "id = ?", whereArgs: [data.id]);
+  }
+
+  Future<void> updateAll(table, List list, String oldName) async {
+    final db = await database;
+
+    for (var data in list) {
+      await db.update(table, data.toMap(), where: "tema = ?", whereArgs: [oldName]);
+    }
   }
 
   Future<void> delete(id, table) async {
-     final db =  await database;
+    final db = await database;
 
-     await db.delete(table,
-         where: "id = ?",
-         whereArgs: [id]
-     );
-   }
+    await db.delete(table, where: "id = ?", whereArgs: [id]);
+  }
 
-   Future<void> deleteAll(tema, table) async {
-     final db =  await database;
+  Future<void> deleteAll(tema, table) async {
+    final db = await database;
 
-     await db.delete(table,
-         where: "tema = ?",
-         whereArgs: [tema]
-     );
-   }
+    await db.delete(table, where: "tema = ?", whereArgs: [tema]);
+  }
 
+  Future<List> queryParams(param, table) async {
+    final db = await database;
 
-   Future<List> queryParams(param, table) async {
-     final db =  await database;
+    final List<Map<String, dynamic>> notes =
+        await db.query(table, where: "tema = ?", whereArgs: [param]);
 
-     final List<Map<String, dynamic>> notes = await db.query(table,
-         where: "tema = ?",
-         whereArgs: [param]
-     );
-
-     return List.generate(notes.length, (i) {
-
-       return Anotation(
-         id: notes[i]['id'],
-         title: notes[i]['title'],
-         type: notes[i]['type'],
-         value: notes[i]['value'],
-         date: notes[i]['date'],
-         tema: notes[i]['tema']
-       );
-     });
+    return List.generate(notes.length, (i) {
+      return Anotation(
+          id: notes[i]['id'],
+          title: notes[i]['title'],
+          type: notes[i]['type'],
+          value: notes[i]['value'],
+          date: notes[i]['date'],
+          tema: notes[i]['tema']);
+    });
 
 //     return notes;
-   }
+  }
 
   Future<List> getAnotation() async {
     final Database db = await database;
@@ -94,26 +86,25 @@ class DataBaseHandler {
 
     return List.generate(notes.length, (i) {
       return Anotation(
-          id: notes[i]['id'],
-          title: notes[i]['title'],
-          type: notes[i]['type'],
-          value: notes[i]['value'],
-          date: notes[i]['date'],
+        id: notes[i]['id'],
+        title: notes[i]['title'],
+        type: notes[i]['type'],
+        value: notes[i]['value'],
+        date: notes[i]['date'],
       );
     });
   }
 
   Future<List<CalcNote>> getCalcNotes() async {
-     final Database db = await database;
+    final Database db = await database;
 
-     final List<Map<String, dynamic>> maps = await db.query('CalcNotes');
+    final List<Map<String, dynamic>> maps = await db.query('CalcNotes');
 
-     return List.generate(maps.length, (i) {
-       return CalcNote(
-           id: maps[i]['id'],
-           tema: maps[i]['tema'],
-           cardColor: maps[i]['cardColor']
-       );
-     });
-   }
+    return List.generate(maps.length, (i) {
+      return CalcNote(
+          id: maps[i]['id'],
+          tema: maps[i]['tema'],
+          cardColor: maps[i]['cardColor']);
+    });
+  }
 }

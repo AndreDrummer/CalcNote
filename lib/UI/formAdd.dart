@@ -97,7 +97,7 @@ class _FormAddState extends State<FormAdd> {
               Align(
                 alignment: Alignment(-0.91, 1),
                 child: Text('Tipo de Anotação',
-                    style: Theme.of(context).textTheme.title),
+                    style: Theme.of(context).textTheme.headline6),
               ),
               Row(
                 children: <Widget>[
@@ -192,7 +192,7 @@ class _FormAddState extends State<FormAdd> {
                     Expanded(
                         child: Text(
                       "${compareDates() ? 'Hoje' : 'Data'}: ${_selectedDate == null ? '' : DateFormat('dd/MM/y').format(_selectedDate)}",
-                      style: Theme.of(context).textTheme.headline,
+                      style: Theme.of(context).textTheme.headline5,
                     )),
                     FlatButton(
                       child: Text(

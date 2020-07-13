@@ -41,7 +41,7 @@ class _DrummerNoteState extends State<DrummerNote> {
   }
 
   start() async {
-    await db.initDB();
+   await db.initDB();
   }
 
   @override
@@ -64,9 +64,34 @@ class _DrummerNoteState extends State<DrummerNote> {
         getNotes().then((reloaded) {
           _scaffoldKey.currentState.showSnackBar(SnackBar(
               content: Text('Nota Excluída!',
-                  style: TextStyle(fontWeight: FontWeight.w600))));
+                  style: TextStyle(fontWeight: FontWeight.w600),),),);
         });
       });
+    });
+  }
+
+  _update(CalcNote calc, String oldName) async {
+    List toAtualize = [];
+   
+    await db.queryParams(oldName, 'Anotation').then((done) {
+      done.forEach((note) {
+        setState(() {
+          note = Anotation(
+            date: note.date,
+            id: note.id,
+            title: note.title,
+            type: note.type,
+            value: note.value,
+            tema: calc.tema
+          );
+          toAtualize.add(note);
+        });
+      });
+    });
+
+
+    db.updateAll('Anotation', toAtualize, oldName).then((updated) {
+      db.update(calc, 'CalcNotes');
     });
   }
 
@@ -84,6 +109,17 @@ class _DrummerNoteState extends State<DrummerNote> {
               child: CardNote(
                 label: calc[index].tema,
                 alterDB: () => _delete(calc[index]),
+                updateDB: (newName) {
+                  String oldName = calc[index].tema;
+                  calc[index] = CalcNote(
+                    cardColor: calc[index].cardColor,
+                    id: calc[index].id,
+                    tema: newName
+                  );
+                  print(calc[index].tema); 
+                  print(oldName); 
+                   _update(calc[index], oldName);
+                },
               ),
             ));
     return cards;
@@ -105,7 +141,7 @@ class _DrummerNoteState extends State<DrummerNote> {
         key: _scaffoldKey,
         appBar: AppBar(
           title:
-              state == 0 ? Text('') : Text('CalcNotes ${DateTime.now().year}'),
+              Text('CalcNotes ${DateTime.now().year}'),
         ),
         body: state == 0
             ? Center(
@@ -116,9 +152,10 @@ class _DrummerNoteState extends State<DrummerNote> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       CircleAvatar(
-                        radius: 30,
-                        child: ClipOval(
-                          child: Image.asset('assets/andre.jpg',
+                        backgroundColor: Colors.transparent,
+                        radius: 100,
+                        child: ClipOval(                          
+                          child: Image.asset('assets/asas.png',
                               width: 1000, height: 1000),
                         ),
                       ),
@@ -132,7 +169,7 @@ class _DrummerNoteState extends State<DrummerNote> {
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                     fontSize: 18)),
-                            Text("André Drummer",
+                            Text("Anja Solutions",
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                     fontStyle: FontStyle.italic))
@@ -173,8 +210,8 @@ class _DrummerNoteState extends State<DrummerNote> {
                         : calcs.isEmpty
                             ? Center(
                                 child: Text(
-                                  "${MediaQuery.of(context).orientation == Orientation.portrait ? 'Clique em  +' : 'Não há notas.' }",
-                                  style: Theme.of(context).textTheme.title,
+                                  "${MediaQuery.of(context).orientation == Orientation.portrait ? 'Inicie uma nova nota' : 'Não há notas.' }",
+                                  style: Theme.of(context).textTheme.headline6,
                                 ),
                               )
                             : SizedBox()

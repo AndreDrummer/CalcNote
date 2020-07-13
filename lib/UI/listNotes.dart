@@ -89,11 +89,11 @@ class _ListNoteState extends State<ListNote> {
                       ),
                       title: Text(
                         note.title,
-                        style: Theme.of(context).textTheme.display1,
+                        style: Theme.of(context).textTheme.headline4,
                       ),
                       subtitle: Text(
                         "${DateFormat('dd/MM/y').format(DateTime.parse(note.date))}",
-                        style: Theme.of(context).textTheme.subtitle,
+                        style: Theme.of(context).textTheme.subtitle2,
                       ),
                       trailing: MediaQuery.of(context).size.width >= 480
                           ? FlatButton.icon(

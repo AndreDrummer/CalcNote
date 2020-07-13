@@ -220,11 +220,11 @@ class _WrittingState extends State<Writting> {
                                 children: <Widget>[
                                   Text(
                                     "Créditos: R\$ ${currencyPattern(totalCredito.toString())}",
-                                    style: Theme.of(context).textTheme.display1,
+                                    style: Theme.of(context).textTheme.headline4,
                                   ),
                                   Text(
                                     "Dívidas: R\$ ${currencyPattern(totalDividas.toString())}",
-                                    style: Theme.of(context).textTheme.display1,
+                                    style: Theme.of(context).textTheme.headline4,
                                   ),
                                   Divider(color: Theme.of(context).accentColor),
                                   Text(
